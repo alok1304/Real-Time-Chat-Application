@@ -1,0 +1,75 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>Chat Room</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="stylesheet" href="{% static 'css/room.css' %}">
+</head>
+<body>
+    <div class="chat-container">
+        <header class="chat-header">
+            <h2>Room: {{ room_name }}</h2>
+        </header>
+
+        <div id="chat-log" class="chat-log"></div>
+
+        <div class="chat-input-area">
+            <input id="chat-message-input" type="text" placeholder="Type your message..." autocomplete="off" />
+            <button id="chat-message-submit">Send</button>
+        </div>
+    </div>
+
+    {{ room_name|json_script:"room-name" }}
+
+<script>
+    const roomName = JSON.parse(document.getElementById('room-name').textContent);
+    const username = localStorage.getItem("chat_username") || "Anonymous";  // ✅ added
+
+    const chatSocket = new WebSocket(
+        'ws://' + window.location.host + '/ws/chat/' + roomName + '/'
+    );
+
+    chatSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        const log = document.querySelector('#chat-log');
+        const msg = document.createElement('div');
+        msg.className = 'chat-message';
+
+        if (data.username === username) {
+            msg.classList.add('own-message');
+        }
+
+        msg.textContent = `${data.username}: ${data.message}`;
+        log.appendChild(msg);
+        log.scrollTop = log.scrollHeight;
+    };
+
+    chatSocket.onclose = function(e) {
+        console.error('Chat socket closed unexpectedly');
+    };
+
+    const messageInput = document.querySelector('#chat-message-input');
+    const messageSubmit = document.querySelector('#chat-message-submit');
+
+    messageInput.focus();
+    messageInput.onkeyup = function(e) {
+        if (e.key === 'Enter') {
+            messageSubmit.click();
+        }
+    };
+
+    messageSubmit.onclick = function(e) {
+        const message = messageInput.value.trim();
+        if (message) {
+            chatSocket.send(JSON.stringify({
+                message: message,
+                username: username   
+            }));
+            messageInput.value = '';
+        }
+    };
+</script>
+</body>
+</html>
