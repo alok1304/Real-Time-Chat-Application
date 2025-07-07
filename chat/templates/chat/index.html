@@ -1,43 +1,42 @@
+{% extends "base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Join Chat Room | MyChat</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="{% static 'css/index.css' %}">
-</head>
-<body>
-  <div class="chat-container">
-    <h1>Join a Chat Room</h1>
 
-    <input id="username-input" type="text" placeholder="Enter your name..." /><br><br>
-    <input id="room-name-input" type="text" placeholder="Enter room name..." /><br><br>
-    <input id="room-name-submit" type="button" value="Enter Room" />
+{% block title %}Join Chat Room | MyChat{% endblock %}
 
-    <div class="footer">Made with ❤️ by Alok</div>
-  </div>
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/index.css' %}">
+{% endblock %}
 
-  <script>
-    document.querySelector('#username-input').focus();
+{% block content %}
+<div class="chat-container">
+  <h1>Join a Chat Room</h1>
 
-    document.querySelector('#room-name-input').addEventListener('keyup', function (e) {
-      if (e.key === 'Enter') {
-        document.querySelector('#room-name-submit').click();
-      }
-    });
+  <input id="username-input" type="text" placeholder="Enter your name..." /><br><br>
+  <input id="room-name-input" type="text" placeholder="Enter room name..." /><br><br>
+  <input id="room-name-submit" type="button" value="Enter Room" />
 
-    document.querySelector('#room-name-submit').onclick = function () {
-      const username = document.querySelector('#username-input').value.trim();
-      const roomName = document.querySelector('#room-name-input').value.trim();
+  <div class="footer">Made with ❤️ by Alok</div>
+</div>
 
-      if (username && roomName) {
-        localStorage.setItem('chat_username', username);
-        window.location.pathname = '/chat/' + encodeURIComponent(roomName) + '/';
-      } else {
-        alert('Please enter both name and room name.');
-      }
-    };
-  </script>
-</body>
-</html>
+<script>
+  document.querySelector('#username-input').focus();
+
+  document.querySelector('#room-name-input').addEventListener('keyup', function (e) {
+    if (e.key === 'Enter') {
+      document.querySelector('#room-name-submit').click();
+    }
+  });
+
+  document.querySelector('#room-name-submit').onclick = function () {
+    const username = document.querySelector('#username-input').value.trim();
+    const roomName = document.querySelector('#room-name-input').value.trim();
+
+    if (username && roomName) {
+      localStorage.setItem('chat_username', username);
+      window.location.pathname = '/chat/' + encodeURIComponent(roomName) + '/';
+    } else {
+      alert('Please enter both name and room name.');
+    }
+  };
+</script>
+{% endblock %}

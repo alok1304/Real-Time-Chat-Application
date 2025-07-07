@@ -1,0 +1,79 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MyChat</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .navbar {
+            background-color: #2c3e50;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #ecf0f1;
+        }
+        .navbar a {
+            color: #ecf0f1;
+            text-decoration: none;
+            margin: 0 10px;
+            font-weight: bold;
+        }
+        .navbar .nav-left, .navbar .nav-right {
+            display: flex;
+            align-items: center;
+        }
+        .navbar form {
+            display: inline;
+        }
+        .navbar button {
+            background: none;
+            border: none;
+            color: #ecf0f1;
+            cursor: pointer;
+            text-decoration: underline;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .content {
+            padding: 20px;
+        }
+    </style>
+
+     <!-- Page-specific CSS -->
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+    <!-- 🌐 Navbar -->
+    <div class="navbar">
+        <div class="nav-left">
+            <a href="/chat/">MyChat</a>
+        </div>
+        <div class="nav-right">
+            {% if user.is_authenticated %}
+                <span>Welcome, {{ user.username }}</span>
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit">Logout</button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}">Login</a>
+                <a href="{% url 'signup' %}">Signup</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- 📦 Page content -->
+    <div class="content">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+</body>
+</html>

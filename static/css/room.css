@@ -1,57 +1,72 @@
+/* Reset and base layout */
 body {
     margin: 0;
     font-family: 'Segoe UI', sans-serif;
     background-color: #f5f7fa;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
 }
 
 .chat-container {
     display: flex;
     flex-direction: column;
-    width: 95%;
-    max-width: 600px;
-    height: 90vh;
+    width: 100%;
+    max-width: 700px;         /* 💡 Increase from 600px to 700px */
+    height: 85vh;             /* 💡 Slightly smaller than full height */
     background-color: #ffffff;
     border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     overflow: hidden;
+    margin: 2rem auto;        /* ✅ Center horizontally with some top margin */
 }
 
+/* Header */
 .chat-header {
     padding: 1rem;
     background-color: #4f46e5;
     color: white;
     text-align: center;
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     font-weight: bold;
 }
 
+/* Chat messages area */
 .chat-log {
     flex: 1;
     padding: 1rem;
     overflow-y: auto;
     background-color: #f0f2f5;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
+/* Messages */
 .chat-message {
     padding: 10px 14px;
     background-color: #e4e6eb;
-    margin-bottom: 10px;
     border-radius: 8px;
     max-width: 80%;
     word-wrap: break-word;
+    align-self: flex-start;
 }
 
+/* Your own messages */
+.own-message {
+    background-color: #d1fae5;
+    align-self: flex-end;
+    margin-left: auto;
+    text-align: right;
+    font-weight: bold;
+}
+
+/* Input area */
 .chat-input-area {
     display: flex;
-    border-top: 1px solid #ddd;
     padding: 10px;
     background-color: #fff;
+    border-top: 1px solid #ddd;
 }
 
+/* Input field */
 #chat-message-input {
     flex: 1;
     padding: 10px;
@@ -61,6 +76,7 @@ body {
     outline: none;
 }
 
+/* Send button */
 #chat-message-submit {
     background-color: #4f46e5;
     color: white;
@@ -75,12 +91,4 @@ body {
 
 #chat-message-submit:hover {
     background-color: #4338ca;
-}
-
-.own-message {
-  background-color: #d1fae5;
-  align-self: flex-end;
-  margin-left: auto;
-  text-align: right;
-  font-weight: bold;
 }

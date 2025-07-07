@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Sign Up - MyChat{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/auth.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <h2>Join MyChat 🚀</h2>
+    <p class="subtitle">Create your account to start chatting</p>
+
+    <form method="post" class="auth-form">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn-primary">Sign Up</button>
+    </form>
+
+    <p class="auth-footer">
+        Already have an account?
+        <a href="{% url 'login' %}">Log in here</a>
+    </p>
+</div>
+{% endblock %}

@@ -1,12 +1,13 @@
+{% extends "base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8"/>
-    <title>Chat Room</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <link rel="stylesheet" href="{% static 'css/room.css' %}">
-</head>
+
+{% block title %}Chat Room{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/room.css' %}">
+{% endblock %}
+
+{% block content %}
 <body>
     <div class="chat-container">
         <header class="chat-header">
@@ -72,4 +73,17 @@
     };
 </script>
 </body>
-</html>
+
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
