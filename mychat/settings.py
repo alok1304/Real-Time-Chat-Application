@@ -27,7 +27,8 @@ SECRET_KEY = 'django-insecure-$8a_(0r5q7a=yurjl@4!urtnk=vlk9%5^7bv+c6^$yl(!u=sgv
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["real-time-chat-application-production-adb2.up.railway.app", "127.0.0.1", "localhost"]
+
 
 
 LOGIN_URL = '/auth/login/'
