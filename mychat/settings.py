@@ -29,7 +29,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["real-time-chat-application-production-adb2.up.railway.app", "127.0.0.1", "localhost"]
 
-
+CSRF_TRUSTED_ORIGINS = [
+    "https://real-time-chat-application-production-adb2.up.railway.app"
+]
 
 LOGIN_URL = '/auth/login/'
 LOGIN_REDIRECT_URL = '/chat/'
@@ -59,6 +61,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
