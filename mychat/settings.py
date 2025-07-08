@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
-REDIS_URL = os.environ.get("REDIS_URL", "fallback-dev-secret")
+REDIS_URL = os.environ.get("REDIS_URL", "redis://127.0.0.1:6379")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
