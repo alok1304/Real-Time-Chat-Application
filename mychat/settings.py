@@ -12,7 +12,10 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
-REDIS_URL = os.environ.get("REDIS_URL", "redis://127.0.0.1:6379")
+from dotenv import load_dotenv
+load_dotenv()
+REDIS_URL = os.environ.get("REDIS_URL")
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,8 +30,11 @@ SECRET_KEY = 'django-insecure-$8a_(0r5q7a=yurjl@4!urtnk=vlk9%5^7bv+c6^$yl(!u=sgv
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["real-time-chat-application-production-adb2.up.railway.app", "127.0.0.1", "localhost"]
-
+ALLOWED_HOSTS = [
+    "real-time-chat-application-production-adb2.up.railway.app",
+    "127.0.0.1",  # optional for local testing
+    "localhost",  # optional for local testing
+]
 CSRF_TRUSTED_ORIGINS = [
     "https://real-time-chat-application-production-adb2.up.railway.app"
 ]
