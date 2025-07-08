@@ -1,1 +1,1 @@
-web: daphne mysite.asgi:application
+web: daphne mychat.asgi:application
