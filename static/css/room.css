@@ -129,3 +129,24 @@ body {
 #chat-message-submit:hover {
     background-color: #4338ca;
 }
+
+
+
+.translate-btn {
+    margin-left: 10px;
+    padding: 5px 10px;
+    background-color: #10b981;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+.translate-select {
+    margin-top: 8px;
+    padding: 4px 8px;
+    font-size: 0.8rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}

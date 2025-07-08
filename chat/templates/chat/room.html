@@ -17,7 +17,6 @@
         <div id="chat-log" class="chat-log"></div>
         <div id="typing-indicator" style="padding: 0.5rem 1rem; font-style: italic; color: #666;"></div>
 
-
         <div class="chat-input-area">
             <input id="chat-message-input" type="text" placeholder="Type your message..." autocomplete="off" />
 
@@ -34,16 +33,24 @@
 
 <script>
     const roomName = JSON.parse(document.getElementById('room-name').textContent);
-    const username = localStorage.getItem("chat_username") || "Anonymous";  // ✅ added
+    const username = localStorage.getItem("chat_username") || "Anonymous";
+
+    const languages = {
+        hi: 'Hindi',
+        es: 'Spanish',
+        fr: 'French',
+        ja: 'Japanese',
+        zh: 'Chinese'
+    };
 
     const chatSocket = new WebSocket(
         'ws://' + window.location.host + '/ws/chat/' + roomName + '/'
     );
-    
+
     const messageInput = document.querySelector('#chat-message-input');
     const messageSubmit = document.querySelector('#chat-message-submit');
 
-        // Typing event
+    // Typing indicator
     let typingTimeout;
     messageInput.addEventListener('input', function () {
         chatSocket.send(JSON.stringify({
@@ -57,13 +64,13 @@
                 'typing': false,
                 'username': username
             }));
-        }, 2000);  // Hide typing after 2 seconds of inactivity
+        }, 2000);
     });
 
     chatSocket.onmessage = function(e) {
         const data = JSON.parse(e.data);
 
-        //typing
+        // Typing indicator
         if (data.typing !== undefined) {
             const typingIndicator = document.getElementById('typing-indicator');
             if (data.username !== username) {
@@ -75,16 +82,31 @@
         const log = document.querySelector('#chat-log');
         const msg = document.createElement('div');
         msg.className = 'chat-message';
+        if (data.username === username) msg.classList.add('own-message');
 
-        if (data.username === username) {
-            msg.classList.add('own-message');
-        }
-
-        // Text
+        // Text message
         if (data.message) {
             const text = document.createElement('p');
-            text.textContent = `${data.username}: ${data.message}`;
+            text.innerHTML = `<strong>${data.username}</strong>: ${data.message}`;
             msg.appendChild(text);
+
+            // Dropdown + translate button
+            const dropdown = document.createElement('select');
+            dropdown.className = 'translate-select';
+            for (const [code, name] of Object.entries(languages)) {
+                const option = document.createElement('option');
+                option.value = code;
+                option.textContent = name;
+                dropdown.appendChild(option);
+            }
+
+            const translateBtn = document.createElement('button');
+            translateBtn.textContent = "Translate";
+            translateBtn.className = "translate-btn";
+            translateBtn.dataset.msg = data.message;
+
+            msg.appendChild(dropdown);
+            msg.appendChild(translateBtn);
         }
 
         // Image
@@ -94,6 +116,8 @@
             img.alt = "image";
             img.style.maxWidth = "200px";
             img.style.marginTop = "8px";
+            img.style.borderRadius = "6px";
+            img.style.boxShadow = "0 1px 4px rgba(0,0,0,0.2)";
             msg.appendChild(img);
         }
 
@@ -107,15 +131,12 @@
 
     messageInput.focus();
     messageInput.onkeyup = function(e) {
-        if (e.key === 'Enter') {
-            messageSubmit.click();
-        }
+        if (e.key === 'Enter') messageSubmit.click();
     };
 
     messageSubmit.onclick = async function(e) {
         const message = messageInput.value.trim();
         const imageFile = document.querySelector('#chat-image-input').files[0];
-
         if (!message && !imageFile) return;
 
         const payload = {
@@ -126,7 +147,7 @@
         if (imageFile) {
             const reader = new FileReader();
             reader.onload = () => {
-                payload.image = reader.result;  // base64 encoded
+                payload.image = reader.result;
                 chatSocket.send(JSON.stringify(payload));
             };
             reader.readAsDataURL(imageFile);
@@ -138,19 +159,44 @@
         document.querySelector('#chat-image-input').value = '';
     };
 
+    // Translate handler
+    document.addEventListener('click', async function(e) {
+    if (e.target.classList.contains('translate-btn')) {
+        const msg = e.target.dataset.msg;
+        const parent = e.target.parentElement;
+        const dropdown = parent.querySelector('.translate-select');
+        const langCode = dropdown.value;
+
+        try {
+            const response = await fetch("https://libretranslate.de/translate", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    q: msg,
+                    source: "en",
+                    target: langCode,
+                    format: "text"
+                })
+            });
+
+            const data = await response.json();
+
+            const translated = document.createElement('p');
+            translated.textContent = `🌐 ${languages[langCode]}: ${data.translatedText}`;
+            translated.style.color = "#555";
+            parent.appendChild(translated);
+
+            e.target.disabled = true;
+            e.target.textContent = "Translated";
+        } catch (error) {
+            const errorMsg = document.createElement('p');
+            errorMsg.textContent = "⚠️ Translation failed. Try again.";
+            errorMsg.style.color = "red";
+            parent.appendChild(errorMsg);
+        }
+    }
+});
+
 </script>
 </body>
-
 {% endblock %}
-
-
-
-
-
-
-
-
-
-
-
-
