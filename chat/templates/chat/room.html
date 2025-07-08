@@ -44,7 +44,9 @@
     };
 
     const chatSocket = new WebSocket(
-        'ws://' + window.location.host + '/ws/chat/' + roomName + '/'
+        (window.location.protocol === 'https:' ? 'wss://' : 'ws://') +
+        window.location.host +
+        '/ws/chat/' + roomName + '/'
     );
 
     const messageInput = document.querySelector('#chat-message-input');
