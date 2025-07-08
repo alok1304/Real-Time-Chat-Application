@@ -20,6 +20,12 @@
 
         <div class="chat-input-area">
             <input id="chat-message-input" type="text" placeholder="Type your message..." autocomplete="off" />
+
+            <label for="chat-image-input" class="file-upload-label">
+                📷 Upload Image
+                <input id="chat-image-input" type="file" accept="image/*" hidden>
+            </label>
+
             <button id="chat-message-submit">Send</button>
         </div>
     </div>
@@ -74,7 +80,23 @@
             msg.classList.add('own-message');
         }
 
-        msg.textContent = `${data.username}: ${data.message}`;
+        // Text
+        if (data.message) {
+            const text = document.createElement('p');
+            text.textContent = `${data.username}: ${data.message}`;
+            msg.appendChild(text);
+        }
+
+        // Image
+        if (data.image) {
+            const img = document.createElement('img');
+            img.src = data.image;
+            img.alt = "image";
+            img.style.maxWidth = "200px";
+            img.style.marginTop = "8px";
+            msg.appendChild(img);
+        }
+
         log.appendChild(msg);
         log.scrollTop = log.scrollHeight;
     };
@@ -90,16 +112,32 @@
         }
     };
 
-    messageSubmit.onclick = function(e) {
+    messageSubmit.onclick = async function(e) {
         const message = messageInput.value.trim();
-        if (message) {
-            chatSocket.send(JSON.stringify({
-                message: message,
-                username: username   
-            }));
-            messageInput.value = '';
+        const imageFile = document.querySelector('#chat-image-input').files[0];
+
+        if (!message && !imageFile) return;
+
+        const payload = {
+            username: username,
+            message: message || ""
+        };
+
+        if (imageFile) {
+            const reader = new FileReader();
+            reader.onload = () => {
+                payload.image = reader.result;  // base64 encoded
+                chatSocket.send(JSON.stringify(payload));
+            };
+            reader.readAsDataURL(imageFile);
+        } else {
+            chatSocket.send(JSON.stringify(payload));
         }
+
+        messageInput.value = '';
+        document.querySelector('#chat-image-input').value = '';
     };
+
 </script>
 </body>
 

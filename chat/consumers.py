@@ -30,6 +30,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         username = data.get('username', 'Anonymous')
         message = data.get('message')
+        image = data.get('image',None)  # base64 string
 
         await self.save_message(self.room_name, username, message)
 
@@ -38,14 +39,16 @@ class ChatConsumer(AsyncWebsocketConsumer):
             {
                 'type': 'chat_message',
                 'username': username,
-                'message': message
+                'message': message,
+                'image': image
             }
         )
 
     async def chat_message(self, event):
         await self.send(text_data=json.dumps({
             'username': event['username'],
-            'message': event['message']
+            'message': event['message'],
+            'image': event.get('image')
         }))
 
     async def typing_status(self, event):
