@@ -15,6 +15,8 @@
         </header>
 
         <div id="chat-log" class="chat-log"></div>
+        <div id="typing-indicator" style="padding: 0.5rem 1rem; font-style: italic; color: #666;"></div>
+
 
         <div class="chat-input-area">
             <input id="chat-message-input" type="text" placeholder="Type your message..." autocomplete="off" />
@@ -31,9 +33,39 @@
     const chatSocket = new WebSocket(
         'ws://' + window.location.host + '/ws/chat/' + roomName + '/'
     );
+    
+    const messageInput = document.querySelector('#chat-message-input');
+    const messageSubmit = document.querySelector('#chat-message-submit');
+
+        // Typing event
+    let typingTimeout;
+    messageInput.addEventListener('input', function () {
+        chatSocket.send(JSON.stringify({
+            'typing': true,
+            'username': username
+        }));
+
+        clearTimeout(typingTimeout);
+        typingTimeout = setTimeout(() => {
+            chatSocket.send(JSON.stringify({
+                'typing': false,
+                'username': username
+            }));
+        }, 2000);  // Hide typing after 2 seconds of inactivity
+    });
 
     chatSocket.onmessage = function(e) {
         const data = JSON.parse(e.data);
+
+        //typing
+        if (data.typing !== undefined) {
+            const typingIndicator = document.getElementById('typing-indicator');
+            if (data.username !== username) {
+                typingIndicator.textContent = data.typing ? `${data.username} is typing...` : '';
+            }
+            return;
+        }
+
         const log = document.querySelector('#chat-log');
         const msg = document.createElement('div');
         msg.className = 'chat-message';
@@ -50,9 +82,6 @@
     chatSocket.onclose = function(e) {
         console.error('Chat socket closed unexpectedly');
     };
-
-    const messageInput = document.querySelector('#chat-message-input');
-    const messageSubmit = document.querySelector('#chat-message-submit');
 
     messageInput.focus();
     messageInput.onkeyup = function(e) {
