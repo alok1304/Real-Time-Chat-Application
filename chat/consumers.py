@@ -1,6 +1,13 @@
 import json
+import base64
+import os
+import hashlib
+from django.conf import settings
+
 from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import sync_to_async
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+
 from .models import Message
 
 class ChatConsumer(AsyncWebsocketConsumer):
@@ -59,4 +66,22 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     @sync_to_async
     def save_message(self, room, username, message):
-        Message.objects.create(room=room, username=username, content=message)
+        """Encrypt the message using AES-GCM and store base64(nonce + ciphertext).
+
+        We derive a 32-byte key from Django's SECRET_KEY using SHA-256. This
+        keeps encryption deterministic for the same deployment, and avoids
+        storing an extra key file. Nonce is random per-message (12 bytes) and
+        prepended to the ciphertext before base64-encoding for storage.
+        """
+        # Handle empty/None messages
+        if message is None:
+            encrypted_b64 = ''
+        else:
+            # derive 32-byte key from SECRET_KEY
+            key = hashlib.sha256(settings.SECRET_KEY.encode()).digest()
+            aesgcm = AESGCM(key)
+            nonce = os.urandom(12)  # 96-bit nonce recommended for AES-GCM
+            ct = aesgcm.encrypt(nonce, message.encode('utf-8'), None)
+            encrypted_b64 = base64.b64encode(nonce + ct).decode('utf-8')
+
+        Message.objects.create(room=room, username=username, content=encrypted_b64)

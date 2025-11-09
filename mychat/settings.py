@@ -42,14 +42,34 @@ LOGIN_URL = '/auth/login/'
 LOGIN_REDIRECT_URL = '/chat/'
 LOGOUT_REDIRECT_URL = '/chat/'
 
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [REDIS_URL],
-        },
-    },
-}
+# Channel layer selection:
+# - Use the in-memory channel layer during local development (DEBUG=True)
+#   so the app doesn't fail when an externally configured Redis (e.g. Upstash)
+#   is unreachable or when you want a quick local run without Redis.
+# - In production (DEBUG=False), prefer the configured REDIS_URL if present;
+#   otherwise fall back to in-memory (not recommended for production).
+if DEBUG:
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels.layers.InMemoryChannelLayer",
+        }
+    }
+else:
+    if REDIS_URL:
+        CHANNEL_LAYERS = {
+            "default": {
+                "BACKEND": "channels_redis.core.RedisChannelLayer",
+                "CONFIG": {
+                    "hosts": [REDIS_URL],
+                },
+            },
+        }
+    else:
+        CHANNEL_LAYERS = {
+            "default": {
+                "BACKEND": "channels.layers.InMemoryChannelLayer",
+            }
+        }
 
 # Application definition
 
